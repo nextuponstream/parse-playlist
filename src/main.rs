@@ -1,17 +1,17 @@
 use clap::{crate_authors, crate_version, App, Arg};
 use log::debug;
 use parse_playlist::parse_playlist_files;
-//use simplelog::*; // NOTE: for debugging
+use simplelog::*; // NOTE: for debugging
 use std::{fs::read_to_string, ops::Add, process::exit};
 
 fn main() -> Result<(), std::io::Error> {
     // NOTE: for debugging
-    //let _ = TermLogger::init(
-    //    LevelFilter::Debug,
-    //    Config::default(),
-    //    TerminalMode::Mixed,
-    //    ColorChoice::Auto,
-    //);
+    let _ = TermLogger::init(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    );
 
     let app = App::new("parse-playlist")
         .author(crate_authors!())
@@ -97,6 +97,16 @@ fn main() -> Result<(), std::io::Error> {
         std::fs::create_dir_all(dest_folder)?;
         debug!("src_file: {}", src_file);
         debug!("dest_file: {}", dest_file);
+        if verbose {
+            println!("Copying...");
+        }
+        // FIXME this instruction does not work when copying to Iphone
+        // Error: Os { code: 95, kind: Uncategorized, message: "Operation not supported" }
+        //
+        // NOTE: this instruction works when copying to a folder in my pc filesystem but not on my
+        // iphone FS
+        // NOTE: cp instruction for one file works when copying a file from my computer to my
+        // iphone
         std::fs::copy(src_file, dest_file)?;
         if verbose {
             println!("Ok");
