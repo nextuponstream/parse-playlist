@@ -2,7 +2,11 @@ use clap::{crate_authors, crate_version, App, Arg};
 use log::debug;
 use parse_playlist::parse_playlist_files;
 use simplelog::*; // NOTE: for debugging
-use std::{fs::read_to_string, ops::Add, process::exit};
+use std::{
+    fs::read_to_string,
+    ops::Add,
+    process::{exit, Command},
+};
 
 fn main() -> Result<(), std::io::Error> {
     // NOTE: for debugging
@@ -107,7 +111,11 @@ fn main() -> Result<(), std::io::Error> {
         // iphone FS
         // NOTE: cp instruction for one file works when copying a file from my computer to my
         // iphone
-        std::fs::copy(src_file, dest_file)?;
+        // std::fs::copy(src_file, dest_file)?;
+        //
+        // NOTE: this is an ugly fix for my specific case since it's not multi-platform, we take
+        // those though. Thanks https://www.reddit.com/r/rust/comments/r1xuj1/help_wanted_copying_files_from_pc_to_iphone_using/hm1jvsn/
+        Command::new("cp").arg(src_file).arg(dest_file).spawn()?;
         if verbose {
             println!("Ok");
         }

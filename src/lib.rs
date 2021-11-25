@@ -13,7 +13,7 @@ use regex::Regex;
 /// `FileX=*` where 'X' is an integer
 pub fn parse_playlist_files(playlist_raw: &str) -> Result<Vec<String>, ()> {
     let mut music_filepaths = vec![];
-    let path_to_music_file_re: Regex = Regex::new(r"(?m)^File\d=(.+)$").unwrap();
+    let path_to_music_file_re: Regex = Regex::new(r"(?m)^File\d+=(.+)$").unwrap();
 
     for cap in path_to_music_file_re.captures_iter(playlist_raw) {
         music_filepaths.push(cap[1].to_string());
@@ -53,6 +53,17 @@ mod tests {
         let music_filepaths = music_filepaths.unwrap();
         assert_eq!(music_filepaths.len(), 2);
         assert_eq!(music_filepaths.get(0).unwrap(), "/path/to/random1");
+        assert_eq!(music_filepaths.get(1).unwrap(), "/path/to/random2");
+    }
+
+    #[test]
+    fn many_more_music() {
+        let playlist_raw = "File10=/path/to/random10\nFile2=/path/to/random2";
+        let music_filepaths = parse_playlist_files(playlist_raw);
+        assert!(music_filepaths.is_ok());
+        let music_filepaths = music_filepaths.unwrap();
+        assert_eq!(music_filepaths.len(), 2);
+        assert_eq!(music_filepaths.get(0).unwrap(), "/path/to/random10");
         assert_eq!(music_filepaths.get(1).unwrap(), "/path/to/random2");
     }
 }
